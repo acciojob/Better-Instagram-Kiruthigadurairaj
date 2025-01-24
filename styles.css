@@ -1,4 +1,4 @@
-#div1 {
+	#div1 {
   background-image: url("https://picsum.photos/id/237/200/300");
   height: 300px;
   width: 200px;
@@ -52,6 +52,9 @@ div.container {
 
 .selected {
   border: 5px solid rgb(0, 195, 255);
+}
+.hide {
+	display : none;
 }
 
 p {
