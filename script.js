@@ -1,54 +1,46 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const images = document.querySelectorAll('.image');
-  let dragSrcEl = null;
+let dragindex = 0;
+let dropindex = 0;
+let clone = "";
 
-  function handleDragStart(e) {
-    dragSrcEl = this;
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', this.outerHTML);
-    this.classList.add('dragging');
-  }
+const images = document.querySelectorAll(".image");
 
-  function handleDragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  }
+function drag(e) {
+  e.dataTransfer.setData("text", e.target.id);
+}
 
-  function handleDragEnter() {
-    this.classList.add('over');
-  }
+function allowDrop(e) {
+  e.preventDefault();
+}
 
-  function handleDragLeave() {
-    this.classList.remove('over');
-  }
-
-  function handleDrop(e) {
-    e.stopPropagation();
-    if (dragSrcEl !== this) {
-      dragSrcEl.parentNode.removeChild(dragSrcEl);
-      const dropHTML = e.dataTransfer.getData('text/html');
-      this.insertAdjacentHTML('beforebegin', dropHTML);
-      const droppedElement = this.previousSibling;
-      addDragAndDropListeners(droppedElement);
+function drop(e) {
+  clone = e.target.cloneNode(true);
+  let data = e.dataTransfer.getData("text");
+  let nodelist = document.getElementById("parent").childNodes;
+  console.log(data, e.target.id);
+  for (let i = 0; i < nodelist.length; i++) {
+    if (nodelist[i].id == data) {
+      dragindex = i;
     }
-    this.classList.remove('over');
   }
 
-  function handleDragEnd() {
-    images.forEach((image) => {
-      image.classList.remove('over');
-      image.classList.remove('dragging');
-    });
-  }
+  dragdrop(clone);
 
-  function addDragAndDropListeners(element) {
-    element.addEventListener('dragstart', handleDragStart, false);
-    element.addEventListener('dragenter', handleDragEnter, false);
-    element.addEventListener('dragover', handleDragOver, false);
-    element.addEventListener('dragleave', handleDragLeave, false);
-    element.addEventListener('drop', handleDrop, false);
-    element.addEventListener('dragend', handleDragEnd, false);
-  }
+  document
+    .getElementById("parent")
+    .replaceChild(document.getElementById(data), e.target);
 
-  images.forEach((image) => addDragAndDropListeners(image));
-});
+  document
+    .getElementById("parent")
+    .insertBefore(
+      clone,
+      document.getElementById("parent").childNodes[dragindex]
+    );
+}
+
+const dragdrop = (image) => {
+  image.ondragstart = drag;
+  image.ondragover = allowDrop;
+  image.ondrop = drop;
+};
+
+images.forEach(dragdrop);
